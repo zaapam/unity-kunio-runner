@@ -7,7 +7,8 @@ public class LevelController : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-	
+		BoxCollider2D box = GetComponent<BoxCollider2D> ();
+		Debug.Log(box.bounds.max);
 	}
 	
 	// Update is called once per frame
@@ -16,8 +17,16 @@ public class LevelController : MonoBehaviour {
 	}
 
 	void OnTriggerExit2D(Collider2D col) {
-		if (col.gameObject.tag == "player") {
-			manager.OnBlockLevelExit(this);
+		if (col.gameObject.tag == "Player") {
+			GetComponentInParent<LevelManager>().OnBlockLevelExit(gameObject);
 		}
+
+		//Debug.Log(col.gameObject.tag);
+	}
+
+	void OnBecameInvisible() {
+		Destroy(gameObject);
+
+		Debug.Log("Invisible");
 	}
 }

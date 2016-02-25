@@ -12,6 +12,8 @@ public class PlayerController : MonoBehaviour {
 	public float maxSpeed = 3.0f;
 	public float acceleration = 1.0f;
 
+	private string state = "idle";
+
 	// Use this for initialization
 	void Start () {
 		anim = GetComponent<Animator> ();
@@ -20,28 +22,31 @@ public class PlayerController : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		float v = Input.GetAxis ("Horizontal") * 1.5f;
-		anim.SetFloat ("speed", Mathf.Abs(v));	
-		//rigid.velocity = new Vector2 (v, rigid.velocity.y);
-		if (Input.GetAxis ("Horizontal") > 0) {
-			transform.Translate (Vector2.right * 1.5f * Time.deltaTime);
-			transform.eulerAngles = new Vector2 (0, 0);
-		} else if (Input.GetAxis ("Horizontal") < 0) {
-			transform.Translate (Vector2.right * 1.5f * Time.deltaTime);
-			transform.eulerAngles = new Vector2 (0, 180);
+		if (state != "hurt") {
+			float v = Input.GetAxis ("Horizontal") * 1.5f;
+			anim.SetFloat ("speed", Mathf.Abs(v));	
+			//rigid.velocity = new Vector2 (v, rigid.velocity.y);
+			if (Input.GetAxis ("Horizontal") > 0) {
+				transform.Translate (Vector2.right * 1.5f * Time.deltaTime);
+				transform.eulerAngles = new Vector2 (0, 0);
+			} else if (Input.GetAxis ("Horizontal") < 0) {
+				transform.Translate (Vector2.right * 1.5f * Time.deltaTime);
+				transform.eulerAngles = new Vector2 (0, 180);
+			}
 		}
 
 
 
 		if (Input.GetButton ("Jump") && rigid.velocity.y == 0 && !isJump) {
 			isJump = true;
-			anim.SetBool ("jump", true);
+			anim.SetBool("jump", true);
 			//rigidbody.AddForce (Vector2.up * 200.0f);
 			rigid.velocity = new Vector2(rigid.velocity.x, 4.0f);
 
 			Debug.Log ("OnJump");
 		}
-		//Debug.Log ("Speed: " + v);
+
+		//Debug.Log ("Trigger: " + anim.);
 
 		//Run();
 	}
@@ -67,12 +72,24 @@ public class PlayerController : MonoBehaviour {
 	void OnCollisionEnter2D(Collision2D col) {
 		if (col.gameObject.tag == "Ground") {
 			isJump = false;
-			anim.SetBool ("jump", false);
+			anim.SetBool("jump", false);
 			rigid.velocity = Vector2.right * rigid.velocity.x;
 
 			Debug.Log ("OnGround");
+		} else if (col.gameObject.tag == "Obstacle") {
+			anim.SetTrigger("hurt");
+			state = "hurt";
+			rigid.AddForce(Vector2.left * 200.0f);
+
+			StartCoroutine(DelayHurt());
+
+			Debug.Log("SetTrigger");
 		}
+	}
 
+	IEnumerator DelayHurt() {
+		yield return new WaitForSeconds(2);
 
+		state = "idle";
 	}
 }
