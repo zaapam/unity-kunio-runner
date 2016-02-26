@@ -7,6 +7,7 @@ public class PlayerController : MonoBehaviour {
 	private float speed = 0;
 	private Animator anim;
 	private Rigidbody2D rigid;
+	private Vector2 frameMovement;
 
 	public float force = 1.5f;
 	public float maxSpeed = 3.0f;
@@ -26,11 +27,12 @@ public class PlayerController : MonoBehaviour {
 			float v = Input.GetAxis ("Horizontal") * 1.5f;
 			anim.SetFloat ("speed", Mathf.Abs(v));	
 			//rigid.velocity = new Vector2 (v, rigid.velocity.y);
+			frameMovement = Vector2.right * 1.5f * Time.deltaTime;
 			if (Input.GetAxis ("Horizontal") > 0) {
-				transform.Translate (Vector2.right * 1.5f * Time.deltaTime);
+				transform.Translate (frameMovement);
 				transform.eulerAngles = new Vector2 (0, 0);
 			} else if (Input.GetAxis ("Horizontal") < 0) {
-				transform.Translate (Vector2.right * 1.5f * Time.deltaTime);
+				transform.Translate (frameMovement);
 				transform.eulerAngles = new Vector2 (0, 180);
 			}
 		}
@@ -91,5 +93,11 @@ public class PlayerController : MonoBehaviour {
 		yield return new WaitForSeconds(2);
 
 		state = "idle";
+	}
+
+	public Vector2 FrameMovement {
+		get {
+			return frameMovement;
+		}
 	}
 }

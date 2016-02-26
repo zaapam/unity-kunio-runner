@@ -3,17 +3,19 @@ using System.Collections;
 
 public class LevelController : MonoBehaviour {
 
+	private BoxCollider2D collider;
+
 	public LevelManager manager;
 
 	// Use this for initialization
 	void Start () {
-		BoxCollider2D box = GetComponent<BoxCollider2D> ();
-		Debug.Log(box.bounds.max);
+		collider = GetComponent<BoxCollider2D> ();
+		//Debug.Log(box.bounds.max);
 	}
 	
 	// Update is called once per frame
 	void Update () {
-	
+		CheckInvisible();
 	}
 
 	void OnTriggerExit2D(Collider2D col) {
@@ -24,9 +26,14 @@ public class LevelController : MonoBehaviour {
 		//Debug.Log(col.gameObject.tag);
 	}
 
-	void OnBecameInvisible() {
-		Destroy(gameObject);
+	void CheckInvisible() {
+		if (!collider.bounds.IsVisibleFrom(Camera.main)) {
+			Debug.Log("******************Invisible");
 
-		Debug.Log("Invisible");
+			//gameObject.SetActive(false);
+			Destroy(gameObject);
+		}
+
+		Debug.Log("Visible");
 	}
 }
